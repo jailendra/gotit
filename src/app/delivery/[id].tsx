@@ -1,286 +1,282 @@
-import React, { useState } from 'react';
+import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
 import {
-  View,
+  ArrowLeft,
+  Clock,
+  DollarSign,
+  MapPin,
+  Navigation,
+  Phone,
+  Star,
+  User,
+} from "lucide-react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Linking,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  Image,
-  Alert,
-} from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { 
-  MapPin, 
-  Phone, 
-  Camera,
-  Navigation,
-  Check,
-  Clock,
-  ArrowLeft
-} from 'lucide-react-native';
+  View,
+} from "react-native";
 
-type DeliveryStep = 'pickup' | 'transit' | 'delivery' | 'completed';
+interface OrderDetails {
+  id: string;
+  merchantName: string;
+  merchantPhone: string;
+  pickupAddress: string;
+  pickupLat: number;
+  pickupLng: number;
+  dropoffAddress: string;
+  dropoffLat: number;
+  dropoffLng: number;
+  customerName: string;
+  customerPhone: string;
+  estimatedEarning: number;
+  distance: number;
+  estimatedTime: number;
+  orderValue: number;
+  items: string[];
+  specialInstructions?: string;
+  rating: number;
+  tips?: number;
+  deliveryCode: string;
+}
 
-export default function DeliveryScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const [currentStep, setCurrentStep] = useState<DeliveryStep>('pickup');
-  const [deliveryCode, setDeliveryCode] = useState('');
-  const [photoTaken, setPhotoTaken] = useState(false);
+export default function DeliveryDetailsScreen() {
+  const [orderDetails] = useState<OrderDetails>({
+    id: "ORD-2024-001",
+    merchantName: "Pizza Hut",
+    merchantPhone: "+91 98765 43210",
+    pickupAddress: "DLF Mall, Gurgaon, Sector 28",
+    pickupLat: 28.4595,
+    pickupLng: 77.0266,
+    dropoffAddress: "Golf Course Road, Block A, Gurgaon",
+    dropoffLat: 28.4543,
+    dropoffLng: 77.0458,
+    customerName: "Priya Sharma",
+    customerPhone: "+91 87654 32109",
+    estimatedEarning: 125,
+    distance: 4.2,
+    estimatedTime: 35,
+    orderValue: 780,
+    items: ["Large Margherita Pizza", "Garlic Bread", "Pepsi 500ml"],
+    specialInstructions: "Ring the bell twice. Apartment 401, 4th floor.",
+    rating: 4.8,
+    tips: 25,
+    deliveryCode: "ABCD",
+  });
 
-  const orderDetails = {
-    id: id,
-    merchantName: 'McDonald\'s',
-    pickupAddress: 'Sector 18, Noida, Uttar Pradesh',
-    dropoffAddress: 'Sector 15, Noida, Uttar Pradesh',
-    customerName: 'Priya Sharma',
-    customerPhone: '+91 98765 43210',
-    merchantPhone: '+91 87654 32109',
-    orderValue: 450,
-    deliveryCode: 'ABCD',
-    estimatedEarning: 65,
-  };
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  const markArrivedAtPickup = () => {
-    Alert.alert(
-      'Arrived at Pickup',
-      'Have you arrived at the merchant location?',
-      [
-        { text: 'No', style: 'cancel' },
-        { text: 'Yes', onPress: () => setCurrentStep('transit') }
-      ]
-    );
-  };
-
-  const markPickedUp = () => {
-    if (!photoTaken) {
-      Alert.alert('Photo Required', 'Please take a photo of the package before marking as picked up');
-      return;
-    }
-    setCurrentStep('delivery');
-  };
-
-  const markArrivedAtDelivery = () => {
-    Alert.alert(
-      'Arrived at Delivery Location',
-      'Have you arrived at the customer location?',
-      [
-        { text: 'No', style: 'cancel' },
-        { text: 'Yes', onPress: () => {} }
-      ]
-    );
-  };
-
-  const completeDelivery = () => {
-    if (deliveryCode !== orderDetails.deliveryCode) {
-      Alert.alert('Invalid Code', 'Please enter the correct delivery code');
-      return;
-    }
-    if (!photoTaken) {
-      Alert.alert('Photo Required', 'Please take a photo proof of delivery');
-      return;
-    }
-    
-    setCurrentStep('completed');
-    setTimeout(() => {
-      Alert.alert(
-        'Delivery Completed!',
-        `You've earned ₹${orderDetails.estimatedEarning} for this delivery`,
-        [
-          { text: 'OK', onPress: () => router.replace('/(tabs)') }
-        ]
-      );
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
     }, 1000);
-  };
+    return () => clearInterval(timer);
+  }, []);
 
-  const takePhoto = () => {
-    // Simulate photo capture
-    Alert.alert(
-      'Photo Captured',
-      'Package photo has been saved successfully',
-      [
-        { text: 'OK', onPress: () => setPhotoTaken(true) }
-      ]
-    );
-  };
+  const startNavigation = async (type: "pickup" | "dropoff") => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-  const callContact = (phone: string) => {
-    Alert.alert('Call', `Would you like to call ${phone}?`);
-  };
+    const { lat, lng } =
+      type === "pickup"
+        ? { lat: orderDetails.pickupLat, lng: orderDetails.pickupLng }
+        : { lat: orderDetails.dropoffLat, lng: orderDetails.dropoffLng };
 
-  const openNavigation = (address: string) => {
-    Alert.alert('Navigation', `Opening navigation to: ${address}`);
-  };
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
 
-  const getStepTitle = () => {
-    switch (currentStep) {
-      case 'pickup':
-        return 'Going to Pickup';
-      case 'transit':
-        return 'Order Picked Up';
-      case 'delivery':
-        return 'Delivering to Customer';
-      case 'completed':
-        return 'Delivery Completed';
-      default:
-        return 'Delivery';
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      Alert.alert("Navigation Error", "Unable to open maps application");
     }
   };
 
-  const getCurrentAddress = () => {
-    return currentStep === 'pickup' ? orderDetails.pickupAddress : orderDetails.dropoffAddress;
+  const callMerchant = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      await Linking.openURL(`tel:${orderDetails.merchantPhone}`);
+    } catch (error) {
+      Alert.alert("Call Error", "Unable to make phone call");
+    }
   };
 
-  const getCurrentContact = () => {
-    return currentStep === 'pickup' 
-      ? { name: orderDetails.merchantName, phone: orderDetails.merchantPhone }
-      : { name: orderDetails.customerName, phone: orderDetails.customerPhone };
+  const proceedToPickup = async () => {
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    router.push("/pickupConfirmation");
   };
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color="#64748B" />
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={async () => {
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.back();
+          }}
+        >
+          <ArrowLeft size={24} color="#1E293B" />
         </TouchableOpacity>
-        <Text style={styles.title}>{getStepTitle()}</Text>
-      </View>
 
-      <View style={styles.progressBar}>
-        <View style={[styles.progressStep, currentStep !== 'pickup' && styles.completedStep]}>
-          <Text style={[styles.progressText, currentStep !== 'pickup' && styles.completedText]}>1</Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>Delivery Details</Text>
+          <Text style={styles.orderId}>Order #{orderDetails.id}</Text>
         </View>
-        <View style={[styles.progressLine, currentStep === 'delivery' || currentStep === 'completed' ? styles.completedLine : null]} />
-        <View style={[styles.progressStep, (currentStep === 'delivery' || currentStep === 'completed') && styles.completedStep]}>
-          <Text style={[styles.progressText, (currentStep === 'delivery' || currentStep === 'completed') && styles.completedText]}>2</Text>
-        </View>
-        <View style={[styles.progressLine, currentStep === 'completed' ? styles.completedLine : null]} />
-        <View style={[styles.progressStep, currentStep === 'completed' && styles.completedStep]}>
-          <Text style={[styles.progressText, currentStep === 'completed' && styles.completedText]}>3</Text>
+
+        <View style={styles.statusBadge}>
+          <Text style={styles.statusText}>ACCEPTED</Text>
         </View>
       </View>
 
-      <View style={styles.orderInfo}>
-        <Text style={styles.orderTitle}>Order #{orderDetails.id}</Text>
-        <Text style={styles.merchantName}>{orderDetails.merchantName}</Text>
-        <Text style={styles.orderValue}>Order Value: ₹{orderDetails.orderValue}</Text>
-      </View>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Order Summary */}
+        <View style={styles.summaryCard}>
+          <View style={styles.summaryHeader}>
+            <Text style={styles.merchantName}>{orderDetails.merchantName}</Text>
+            <View style={styles.ratingContainer}>
+              <Star size={16} color="#F59E0B" fill="#F59E0B" />
+              <Text style={styles.ratingText}>{orderDetails.rating}</Text>
+            </View>
+          </View>
 
-      <View style={styles.locationCard}>
-        <View style={styles.locationHeader}>
-          <MapPin size={20} color="#2563EB" />
-          <Text style={styles.locationTitle}>
-            {currentStep === 'pickup' ? 'Pickup Location' : 'Delivery Location'}
+          <View style={styles.earningsRow}>
+            <View style={styles.earningsItem}>
+              <DollarSign size={20} color="#059669" />
+              <View>
+                <Text style={styles.earningsAmount}>
+                  ₹{orderDetails.estimatedEarning}
+                </Text>
+                {orderDetails.tips && (
+                  <Text style={styles.tipsAmount}>
+                    +₹{orderDetails.tips} tips
+                  </Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.orderStats}>
+              <Text style={styles.statText}>
+                {orderDetails.distance} km • {orderDetails.estimatedTime} min
+              </Text>
+              <Text style={styles.orderValue}>
+                Order Value: ₹{orderDetails.orderValue}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Pickup Information */}
+        <View style={styles.locationCard}>
+          <View style={styles.locationHeader}>
+            <MapPin size={20} color="#10B981" />
+            <Text style={styles.locationTitle}>Pickup Location</Text>
+            <TouchableOpacity style={styles.callButton} onPress={callMerchant}>
+              <Phone size={16} color="#2563EB" />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.locationAddress}>
+            {orderDetails.pickupAddress}
           </Text>
-        </View>
-        <Text style={styles.address}>{getCurrentAddress()}</Text>
-        
-        <View style={styles.locationActions}>
-          <TouchableOpacity 
+          <Text style={styles.merchantPhone}>
+            📞 {orderDetails.merchantPhone}
+          </Text>
+
+          <TouchableOpacity
             style={styles.navigationButton}
-            onPress={() => openNavigation(getCurrentAddress())}
+            onPress={() => startNavigation("pickup")}
           >
             <Navigation size={20} color="#ffffff" />
-            <Text style={styles.navigationText}>Navigate</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.callButton}
-            onPress={() => callContact(getCurrentContact().phone)}
-          >
-            <Phone size={20} color="#2563EB" />
-            <Text style={styles.callText}>Call {getCurrentContact().name}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {currentStep === 'pickup' && (
-        <View style={styles.actionSection}>
-          <TouchableOpacity style={styles.primaryButton} onPress={markArrivedAtPickup}>
-            <Text style={styles.primaryButtonText}>Mark as Arrived at Pickup</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {currentStep === 'transit' && (
-        <View style={styles.actionSection}>
-          <Text style={styles.instructionText}>
-            Please take a photo of the package before confirming pickup
-          </Text>
-          
-          <TouchableOpacity 
-            style={[styles.photoButton, photoTaken && styles.photoButtonTaken]} 
-            onPress={takePhoto}
-          >
-            <Camera size={24} color="#ffffff" />
-            <Text style={styles.photoButtonText}>
-              {photoTaken ? 'Photo Taken ✓' : 'Take Package Photo'}
+            <Text style={styles.navigationText}>
+              Start Navigation to Pickup
             </Text>
           </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.primaryButton, !photoTaken && styles.disabledButton]} 
-            onPress={markPickedUp}
-            disabled={!photoTaken}
-          >
-            <Text style={styles.primaryButtonText}>Mark as Picked Up</Text>
-          </TouchableOpacity>
         </View>
-      )}
 
-      {currentStep === 'delivery' && (
-        <View style={styles.actionSection}>
-          <TouchableOpacity style={styles.arrivedButton} onPress={markArrivedAtDelivery}>
-            <Text style={styles.arrivedButtonText}>Mark as Arrived at Drop-off</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.instructionText}>
-            Enter the 4-letter delivery code from customer
-          </Text>
-          
-          <TextInput
-            style={styles.codeInput}
-            placeholder="Enter delivery code (e.g. ABCD)"
-            value={deliveryCode}
-            onChangeText={setDeliveryCode}
-            maxLength={4}
-            autoCapitalize="characters"
-          />
-
-          <TouchableOpacity 
-            style={[styles.photoButton, photoTaken && styles.photoButtonTaken]} 
-            onPress={takePhoto}
-          >
-            <Camera size={24} color="#ffffff" />
-            <Text style={styles.photoButtonText}>
-              {photoTaken ? 'Delivery Photo Taken ✓' : 'Take Delivery Photo'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[
-              styles.primaryButton, 
-              (deliveryCode !== orderDetails.deliveryCode || !photoTaken) && styles.disabledButton
-            ]} 
-            onPress={completeDelivery}
-            disabled={deliveryCode !== orderDetails.deliveryCode || !photoTaken}
-          >
-            <Check size={20} color="#ffffff" />
-            <Text style={styles.primaryButtonText}>Complete Delivery</Text>
-          </TouchableOpacity>
+        {/* Order Items */}
+        <View style={styles.itemsCard}>
+          <Text style={styles.cardTitle}>Order Items</Text>
+          {orderDetails.items.map((item, index) => (
+            <View key={index} style={styles.itemRow}>
+              <Text style={styles.itemBullet}>•</Text>
+              <Text style={styles.itemText}>{item}</Text>
+            </View>
+          ))}
         </View>
-      )}
 
-      {currentStep === 'completed' && (
-        <View style={styles.completedSection}>
-          <View style={styles.successIcon}>
-            <Check size={48} color="#ffffff" />
+        {/* Customer Information */}
+        <View style={styles.customerCard}>
+          <View style={styles.customerHeader}>
+            <User size={20} color="#2563EB" />
+            <Text style={styles.cardTitle}>Customer Details</Text>
           </View>
-          <Text style={styles.completedTitle}>Delivery Completed!</Text>
-          <Text style={styles.completedSubtitle}>
-            You've earned ₹{orderDetails.estimatedEarning}
-          </Text>
+
+          <View style={styles.customerInfo}>
+            <Text style={styles.customerName}>{orderDetails.customerName}</Text>
+            <Text style={styles.customerPhone}>
+              📞 {orderDetails.customerPhone}
+            </Text>
+          </View>
+
+          <View style={styles.dropoffInfo}>
+            <Text style={styles.dropoffLabel}>Delivery Address:</Text>
+            <Text style={styles.dropoffAddress}>
+              {orderDetails.dropoffAddress}
+            </Text>
+          </View>
+
+          {orderDetails.specialInstructions && (
+            <View style={styles.instructionsContainer}>
+              <Text style={styles.instructionsLabel}>
+                Special Instructions:
+              </Text>
+              <Text style={styles.instructionsText}>
+                {orderDetails.specialInstructions}
+              </Text>
+            </View>
+          )}
+
+          <View style={styles.codeContainer}>
+            <Text style={styles.codeLabel}>Delivery Code:</Text>
+            <View style={styles.codeBox}>
+              <Text style={styles.codeText}>{orderDetails.deliveryCode}</Text>
+            </View>
+          </View>
         </View>
-      )}
+
+        {/* Time Information */}
+        <View style={styles.timeCard}>
+          <View style={styles.timeRow}>
+            <Clock size={18} color="#64748B" />
+            <Text style={styles.timeLabel}>Accepted at:</Text>
+            <Text style={styles.timeValue}>
+              {currentTime.toLocaleTimeString()}
+            </Text>
+          </View>
+          <View style={styles.timeRow}>
+            <Clock size={18} color="#F59E0B" />
+            <Text style={styles.timeLabel}>Expected delivery:</Text>
+            <Text style={styles.timeValue}>
+              {new Date(
+                currentTime.getTime() + orderDetails.estimatedTime * 60000
+              ).toLocaleTimeString()}
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Bottom Action */}
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={styles.proceedButton}
+          onPress={proceedToPickup}
+        >
+          <Text style={styles.proceedButtonText}>I'm on my way to pickup!</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -288,240 +284,343 @@ export default function DeliveryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: "#F8FAFC",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
     paddingTop: 60,
-    backgroundColor: '#ffffff',
+    paddingBottom: 20,
+    backgroundColor: "#ffffff",
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    gap: 16,
+    borderBottomColor: "#E2E8F0",
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   backButton: {
-    padding: 4,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: "#F8FAFC",
+  },
+  headerContent: {
+    flex: 1,
+    marginLeft: 16,
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
-    color: '#1E293B',
+    fontWeight: "700",
+    color: "#1E293B",
   },
-  progressBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#ffffff',
-  },
-  progressStep: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#E2E8F0',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  completedStep: {
-    backgroundColor: '#10B981',
-  },
-  progressText: {
+  orderId: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#64748B',
+    color: "#64748B",
+    marginTop: 2,
   },
-  completedText: {
-    color: '#ffffff',
+  statusBadge: {
+    backgroundColor: "#059669",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
-  progressLine: {
-    width: 40,
-    height: 2,
-    backgroundColor: '#E2E8F0',
+  statusText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#ffffff",
   },
-  completedLine: {
-    backgroundColor: '#10B981',
-  },
-  orderInfo: {
+  content: {
+    flex: 1,
     padding: 20,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
   },
-  orderTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2563EB',
-  },
-  merchantName: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginVertical: 4,
-  },
-  orderValue: {
-    fontSize: 14,
-    color: '#64748B',
-  },
-  locationCard: {
-    backgroundColor: '#ffffff',
-    margin: 20,
-    padding: 20,
+  summaryCard: {
+    backgroundColor: "#ffffff",
     borderRadius: 16,
-    shadowColor: '#000000',
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
     elevation: 4,
   },
-  locationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  summaryHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  merchantName: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1E293B",
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  ratingText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  earningsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  earningsItem: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
+  },
+  earningsAmount: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#059669",
+  },
+  tipsAmount: {
+    fontSize: 14,
+    color: "#059669",
+    fontWeight: "500",
+  },
+  orderStats: {
+    alignItems: "flex-end",
+  },
+  statText: {
+    fontSize: 14,
+    color: "#64748B",
+    fontWeight: "500",
+  },
+  orderValue: {
+    fontSize: 12,
+    color: "#64748B",
+    marginTop: 2,
+  },
+  locationCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: "#10B981",
+  },
+  locationHeader: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 12,
+    gap: 8,
   },
   locationTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1E293B',
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1E293B",
+    flex: 1,
   },
-  address: {
-    fontSize: 16,
-    color: '#475569',
-    lineHeight: 24,
-    marginBottom: 20,
+  callButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: "#EEF2FF",
   },
-  locationActions: {
-    flexDirection: 'row',
-    gap: 12,
+  locationAddress: {
+    fontSize: 16,
+    color: "#374151",
+    marginBottom: 8,
+    lineHeight: 22,
+  },
+  merchantPhone: {
+    fontSize: 14,
+    color: "#64748B",
+    marginBottom: 16,
   },
   navigationButton: {
-    flex: 2,
-    backgroundColor: '#2563EB',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#2563EB",
+    padding: 16,
+    borderRadius: 12,
     gap: 8,
   },
   navigationText: {
-    color: '#ffffff',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
+    color: "#ffffff",
   },
-  callButton: {
+  itemsCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1E293B",
+    marginBottom: 16,
+  },
+  itemRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 8,
+    gap: 8,
+  },
+  itemBullet: {
+    fontSize: 16,
+    color: "#2563EB",
+    fontWeight: "700",
+  },
+  itemText: {
+    fontSize: 15,
+    color: "#374151",
     flex: 1,
-    backgroundColor: '#F1F5F9',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    lineHeight: 20,
+  },
+  customerCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: "#EF4444",
+  },
+  customerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+    gap: 8,
+  },
+  customerInfo: {
+    marginBottom: 16,
+  },
+  customerName: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1E293B",
+    marginBottom: 4,
+  },
+  customerPhone: {
+    fontSize: 14,
+    color: "#64748B",
+  },
+  dropoffInfo: {
+    marginBottom: 16,
+  },
+  dropoffLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748B",
+    marginBottom: 4,
+  },
+  dropoffAddress: {
+    fontSize: 16,
+    color: "#374151",
+    lineHeight: 22,
+  },
+  instructionsContainer: {
+    backgroundColor: "#FEF3C7",
     padding: 12,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 8,
-  },
-  callText: {
-    color: '#2563EB',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  actionSection: {
-    padding: 20,
-  },
-  instructionText: {
-    fontSize: 16,
-    color: '#475569',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 24,
-  },
-  photoButton: {
-    backgroundColor: '#F59E0B',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
     marginBottom: 16,
+  },
+  instructionsLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#92400E",
+    marginBottom: 4,
+  },
+  instructionsText: {
+    fontSize: 14,
+    color: "#78350F",
+    lineHeight: 18,
+  },
+  codeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
-  photoButtonTaken: {
-    backgroundColor: '#10B981',
+  codeLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748B",
   },
-  photoButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  codeInput: {
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+  codeBox: {
+    backgroundColor: "#1F2937",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 8,
-    padding: 16,
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
-    letterSpacing: 4,
-    marginBottom: 20,
-    textTransform: 'uppercase',
   },
-  primaryButton: {
-    backgroundColor: '#2563EB',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
+  codeText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#ffffff",
+    letterSpacing: 2,
+  },
+  timeCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
     gap: 8,
   },
-  primaryButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  disabledButton: {
-    backgroundColor: '#94A3B8',
-  },
-  arrivedButton: {
-    backgroundColor: '#F1F5F9',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  arrivedButtonText: {
-    color: '#2563EB',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  completedSection: {
+  timeLabel: {
+    fontSize: 14,
+    color: "#64748B",
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
   },
-  successIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#10B981',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
+  timeValue: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1E293B",
   },
-  completedTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginBottom: 8,
+  bottomContainer: {
+    padding: 20,
+    backgroundColor: "#ffffff",
+    borderTopWidth: 1,
+    borderTopColor: "#E2E8F0",
   },
-  completedSubtitle: {
-    fontSize: 16,
-    color: '#64748B',
+  proceedButton: {
+    backgroundColor: "#059669",
+    padding: 18,
+    borderRadius: 16,
+    alignItems: "center",
+    shadowColor: "#059669",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  proceedButtonText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#ffffff",
   },
 });
