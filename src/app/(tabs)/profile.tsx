@@ -30,6 +30,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { removeAuthToken } from "../../hooks/useAuthStorage";
 
 export default function ProfileScreen() {
   const [driverInfo, setDriverInfo] = useState({
@@ -127,8 +128,8 @@ export default function ProfileScreen() {
         {
           text: "Logout",
           style: "destructive",
-          onPress: () => {
-            // Clear any stored auth tokens here
+          onPress: async () => {
+            await removeAuthToken();
             router.replace("/login");
           },
         },

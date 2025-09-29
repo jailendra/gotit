@@ -2,21 +2,18 @@ import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import {
-  Activity,
   Award,
   Bell,
-  Calendar,
   Camera,
   Clock,
   DollarSign,
   MapPin,
   Navigation,
   Package,
-  Power,
   Star,
   Target,
   TrendingUp,
-  Zap,
+  Zap
 } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -32,6 +29,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import StatusToggle from "../../components/StatusToggle";
 
 // TypeScript interfaces
 interface TodayStats {
@@ -319,14 +317,6 @@ export default function DashboardScreen() {
               <View>
                 <Text style={styles.greeting}>{getGreeting()},</Text>
                 <Text style={styles.driverName}>Vishal Pandey</Text>
-                <View style={styles.performanceBadge}>
-                  <Text style={styles.performanceEmoji}>
-                    {performance.icon}
-                  </Text>
-                  <Text style={styles.performanceText}>
-                    {performance.level} Driver
-                  </Text>
-                </View>
               </View>
             </View>
 
@@ -349,19 +339,7 @@ export default function DashboardScreen() {
                   ],
                 }}
               >
-                <TouchableOpacity
-                  style={[
-                    styles.statusButton,
-                    isOnline ? styles.onlineButton : styles.offlineButton,
-                  ]}
-                  onPress={toggleOnlineStatus}
-                >
-                  <Power size={18} color="#ffffff" />
-                  <Text style={styles.statusText}>
-                    {isOnline ? "ONLINE" : "OFFLINE"}
-                  </Text>
-                  {isOnline && <View style={styles.liveIndicator} />}
-                </TouchableOpacity>
+                <StatusToggle isOnline={isOnline} onToggle={toggleOnlineStatus} />
               </Animated.View>
             </View>
           </Animated.View>
@@ -397,10 +375,6 @@ export default function DashboardScreen() {
         >
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Today's Performance</Text>
-            <TouchableOpacity style={styles.sectionAction}>
-              <Activity size={16} color="#8B5CF6" />
-              <Text style={styles.sectionActionText}>Details</Text>
-            </TouchableOpacity>
           </View>
 
           <View style={styles.statsGrid}>
@@ -485,14 +459,6 @@ export default function DashboardScreen() {
             onPress={() => router.push("/verification?type=manual")}
             gradient={["#F59E0B", "#D97706"]}
           />
-
-          <ActionButton
-            icon={Calendar}
-            title="Schedule Manager"
-            subtitle="Plan your driving hours"
-            onPress={() => router.push("/schedule")}
-            gradient={["#8B5CF6", "#7C3AED"]}
-          />
         </Animated.View>
 
         {/* Live Status with Enhanced Design */}
@@ -529,87 +495,6 @@ export default function DashboardScreen() {
             </LinearGradient>
           </Animated.View>
         )}
-
-        {/* Performance Insights */}
-        <Animated.View
-          style={[
-            styles.insightsContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
-        >
-          <Text style={styles.sectionTitle}>Performance Insights</Text>
-
-          <View style={styles.insightCard}>
-            <LinearGradient
-              colors={[performance.color + "15", performance.color + "05"]}
-              style={styles.insightGradient}
-            >
-              <View style={styles.insightHeader}>
-                <Text style={styles.insightEmoji}>{performance.icon}</Text>
-                <View>
-                  <Text style={styles.insightTitle}>
-                    {performance.level} Performance
-                  </Text>
-                  <Text style={styles.insightSubtitle}>
-                    Top {performance.level === "Elite" ? "5" : "15"}% of drivers
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.insightStats}>
-                <View style={styles.insightStat}>
-                  <Text style={styles.insightStatValue}>
-                    {todayStats.efficiency}%
-                  </Text>
-                  <Text style={styles.insightStatLabel}>Efficiency</Text>
-                </View>
-                <View style={styles.insightStat}>
-                  <Text style={styles.insightStatValue}>
-                    {todayStats.streak}
-                  </Text>
-                  <Text style={styles.insightStatLabel}>Day Streak</Text>
-                </View>
-                <View style={styles.insightStat}>
-                  <Text style={styles.insightStatValue}>
-                    ₹
-                    {Math.round(
-                      todayStats.earnings / todayStats.completedOrders
-                    )}
-                  </Text>
-                  <Text style={styles.insightStatLabel}>Avg/Order</Text>
-                </View>
-              </View>
-            </LinearGradient>
-          </View>
-        </Animated.View>
-
-        {/* Smart Tips */}
-        <Animated.View
-          style={[
-            styles.tipsContainer,
-            {
-              opacity: fadeAnim,
-            },
-          ]}
-        >
-          <Text style={styles.sectionTitle}>Smart Tips</Text>
-          <View style={styles.tipCard}>
-            <LinearGradient
-              colors={["#EDE9FE", "#DDD6FE"]}
-              style={styles.tipGradient}
-            >
-              <Zap size={20} color="#8B5CF6" />
-              <Text style={styles.tipText}>
-                Peak hours 12-2 PM & 7-9 PM. Earnings potential +40% during
-                these times!
-              </Text>
-            </LinearGradient>
-          </View>
-        </Animated.View>
-
         <View style={styles.bottomSpacer} />
       </ScrollView>
     </>

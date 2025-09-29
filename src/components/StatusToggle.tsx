@@ -1,6 +1,6 @@
 import { Power } from "lucide-react-native";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface StatusToggleProps {
   isOnline: boolean;
@@ -25,7 +25,7 @@ export default function StatusToggle({
     >
       <Power size={20} color="#ffffff" />
       <Text style={styles.text}>{isOnline ? "ONLINE" : "OFFLINE"}</Text>
-      {isOnline && <View style={styles.indicator} />}
+     
     </TouchableOpacity>
   );
 }

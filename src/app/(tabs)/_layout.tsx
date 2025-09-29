@@ -3,6 +3,7 @@ import { Tabs, useRouter } from "expo-router";
 import { DollarSign, Home, Package, User } from "lucide-react-native";
 import React from "react";
 import { Animated, Platform, Pressable, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Simplified and optimized tab bar icon
 type TabBarIconProps = {
@@ -99,7 +100,7 @@ function MainTabBarIcon({
 
   let icon;
   switch (route.name) {
-    case "index":
+    case "home":
       icon = <Home {...iconProps} />;
       break;
     case "deliveries":
@@ -124,17 +125,31 @@ function MainTabBarIcon({
 
 const TabLayout = () => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleTabPress = (routeName: string) => {
-    const route = routeName === "index" ? "/" : `/${routeName}`;
-    router.push(route);
+    const path =
+      routeName === "home"
+        ? "/(tabs)/home"
+        : routeName === "deliveries"
+        ? "/(tabs)/deliveries"
+        : routeName === "earnings"
+        ? "/(tabs)/earnings"
+        : "/(tabs)/profile";
+    router.push(path);
   };
 
   return (
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            height: Platform.select({ ios: 60 + insets.bottom, android: 60 + Math.max(insets.bottom, 8) }),
+            paddingBottom: Platform.select({ ios: insets.bottom || 16, android: Math.max(insets.bottom, 10) }),
+          },
+        ],
         tabBarActiveTintColor: "#2563EB",
         tabBarInactiveTintColor: "#64748B",
         tabBarLabelStyle: styles.tabLabel,
@@ -158,7 +173,7 @@ const TabLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Home",
           tabBarAccessibilityLabel: "Home Dashboard",
@@ -194,14 +209,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
     borderTopColor: "#E2E8F0",
-    height: Platform.select({
-      ios: 88,
-      android: 70,
-    }),
-    paddingBottom: Platform.select({
-      ios: 28,
-      android: 10,
-    }),
     paddingTop: 8,
     paddingHorizontal: 16,
     // Clean shadow

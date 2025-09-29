@@ -8,7 +8,6 @@ import {
   Download,
   Eye,
   EyeOff,
-  Filter,
   Gift,
   MapPin,
   Package,
@@ -681,7 +680,7 @@ export default function EarningsScreen() {
         <View style={styles.historySection}>
           <View style={styles.historySectionHeader}>
             <Text style={styles.sectionTitle}>Recent Deliveries</Text>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.filterButton}
               onPress={async () => {
                 await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -689,7 +688,7 @@ export default function EarningsScreen() {
             >
               <Filter size={16} color="#64748B" />
               <Text style={styles.filterText}>Filter</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <FlatList
@@ -702,7 +701,7 @@ export default function EarningsScreen() {
         </View>
 
         {/* Withdraw Button */}
-        <View style={styles.withdrawSection}>
+        {/* <View style={styles.withdrawSection}>
           <TouchableOpacity
             style={styles.withdrawButton}
             onPress={handleWithdraw}
@@ -720,7 +719,7 @@ export default function EarningsScreen() {
           <Text style={styles.withdrawNote}>
             💡 Withdrawals are processed within 24 hours on business days
           </Text>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );
