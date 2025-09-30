@@ -1,3 +1,4 @@
+import StatusToggle from "@/src/components/StatusToggle";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -19,7 +20,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
-  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -29,7 +29,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import StatusToggle from "../../components/StatusToggle";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface TodayStats {
   totalOrders: number;
@@ -76,6 +76,8 @@ export default function DashboardScreen() {
   const slideAnim = useRef(new Animated.Value(50)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const onlineAnim = useRef(new Animated.Value(0)).current;
+
+  const inset = useSafeAreaInsets();
 
   const getGreeting = () => {
     if (currentHour < 6) return "Working late";
@@ -191,8 +193,8 @@ export default function DashboardScreen() {
       <StatusBar barStyle="light-content" backgroundColor="#131e42" />
       {/* Glassmorphic Header */}
       <LinearGradient
-        colors={["#131e42", "#1a2952", "#1f3162"]}
-        style={styles.headerGradient}
+        colors={["#141e30", "#243b55", "#141e30"]}
+        style={[styles.headerGradient,{paddingTop: inset.top}]}
       >
         <Animated.View
           style={[
@@ -213,7 +215,7 @@ export default function DashboardScreen() {
               </LinearGradient>
             </View>
             <View>
-              <Text style={styles.greeting}>{getGreeting()},</Text>
+              <Text style={styles.greeting}>{getGreeting()} !!</Text>
               <Text style={styles.driverName}>Vishal Pandey</Text>
             </View>
           </View>
@@ -226,8 +228,7 @@ export default function DashboardScreen() {
           </TouchableOpacity>
         </Animated.View>
 
-          <StatusToggle isOnline={isOnline} onToggle={toggleOnlineStatus} />
-     
+        <StatusToggle isOnline={isOnline} onToggle={toggleOnlineStatus} />
       </LinearGradient>
       <ScrollView
         style={styles.container}
@@ -399,8 +400,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
   },
   headerGradient: {
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
     shadowColor: "#131e42",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
@@ -412,8 +411,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 24,
-    paddingTop: Platform.OS === "ios" ? 60 : 40,
+    padding: 20,
   },
   toggleContainer: {
     alignItems: "center",
