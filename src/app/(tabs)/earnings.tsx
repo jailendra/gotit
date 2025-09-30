@@ -1,7 +1,7 @@
+import Header from "@/src/components/Header";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import {
-  ArrowLeft,
   BarChart3,
   Clock,
   DollarSign,
@@ -14,7 +14,7 @@ import {
   Star,
   TrendingDown,
   TrendingUp,
-  Wallet,
+  Wallet
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -397,45 +397,35 @@ export default function EarningsScreen() {
     );
   };
 
+
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={async () => {
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.back();
-          }}
-        >
-          <ArrowLeft size={24} color="#1E293B" />
-        </TouchableOpacity>
-
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>Earnings</Text>
-          <Text style={styles.subtitle}>Track your delivery income</Text>
-        </View>
-
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={toggleBalanceVisibility}
-          >
-            {showBalance ? (
-              <Eye size={20} color="#64748B" />
-            ) : (
-              <EyeOff size={20} color="#64748B" />
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={handleDownloadStatement}
-          >
-            <Download size={20} color="#64748B" />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Header
+        title="Earnings"
+        subtitle="Track your delivery income"
+        showBack
+        onBack={() => router.back()}
+        right={
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={toggleBalanceVisibility}
+            >
+              {showBalance ? (
+                <Eye size={20} color="#64748B" />
+              ) : (
+                <EyeOff size={20} color="#64748B" />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={handleDownloadStatement}
+            >
+              <Download size={20} color="#64748B" />
+            </TouchableOpacity>
+          </View>
+        }
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}

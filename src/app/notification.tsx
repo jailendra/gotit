@@ -1,7 +1,5 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import {
-  ArrowLeft,
   Award,
   Calendar,
   Clock,
@@ -14,16 +12,15 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
-  Platform,
   RefreshControl,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+import Header from "../components/Header";
 
 // TypeScript interfaces
 interface Notification {
@@ -40,8 +37,6 @@ interface NotificationCardProps {
   notification: Notification;
   onPress: () => void;
 }
-
-const { width } = Dimensions.get("window");
 
 const staticNotifications: Notification[] = [
   {
@@ -135,8 +130,6 @@ export default function NotificationsScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
   const markAsRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif))
@@ -200,49 +193,16 @@ export default function NotificationsScreen() {
 
           <Text style={styles.notificationMessage}>{notification.message}</Text>
         </View>
-
-        {!notification.read && (
-          <View
-            style={[styles.unreadDot, { backgroundColor: notification.color }]}
-          />
-        )}
       </View>
     </TouchableOpacity>
   );
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#1E293B" />
+      <StatusBar barStyle="light-content" backgroundColor="#131e42" />
 
       {/* Header */}
-      <LinearGradient
-        colors={["#1E293B", "#334155", "#475569"]}
-        style={styles.headerGradient}
-      >
-        <Animated.View
-          style={[
-            styles.header,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
-        >
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-            activeOpacity={0.8}
-          >
-            <ArrowLeft size={24} color="#ffffff" />
-          </TouchableOpacity>
-
-          <View style={styles.headerContent}>
-            <Text style={styles.headerTitle}>Notifications</Text>
-          </View>
-
-          <View style={styles.headerSpacer} />
-        </Animated.View>
-      </LinearGradient>
+  <Header title="Notifications" showBack onBack={() => router.back()} />
 
       {/* Notifications List */}
       <ScrollView
@@ -302,9 +262,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 24,
-    paddingTop: Platform.OS === "ios" ? 60 : 40,
-    paddingBottom: 24,
+    padding: 20,
   },
   backButton: {
     width: 44,

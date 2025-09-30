@@ -33,7 +33,7 @@ export default function StatusToggle({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "center",
+    alignSelf: "center",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,

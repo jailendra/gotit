@@ -1,3 +1,4 @@
+import Header from "@/src/components/Header";
 import { router } from "expo-router";
 import {
   Award,
@@ -160,6 +161,7 @@ export default function ProfileScreen() {
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+       <Header title="My Profile" showBack onBack={() => router.back()} />
       <ScrollView
         style={styles.container}
         refreshControl={
@@ -169,32 +171,9 @@ export default function ProfileScreen() {
       >
         <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>My Profile</Text>
-            {/* <TouchableOpacity style={styles.editButton} onPress={editProfile}>
-              <Edit3 size={20} color="#2563EB" />
-            </TouchableOpacity> */}
-          </View>
+         
 
-          {/* Status Banner */}
-          {/* <View
-            style={[
-              styles.statusBanner,
-              driverInfo.isOnline ? styles.onlineBanner : styles.offlineBanner,
-            ]}
-          >
-            <View
-              style={[
-                styles.statusDot,
-                driverInfo.isOnline ? styles.onlineDot : styles.offlineDot,
-              ]}
-            />
-            <Text style={styles.statusText}>
-              {driverInfo.isOnline
-                ? "You're Online & Ready for Deliveries"
-                : "You're Currently Offline"}
-            </Text>
-          </View> */}
+          
 
           {/* Profile Section */}
           <View style={styles.profileSection}>

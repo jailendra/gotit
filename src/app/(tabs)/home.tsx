@@ -13,14 +13,14 @@ import {
   Star,
   Target,
   TrendingUp,
-  Zap
+  Zap,
 } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Alert,
   Animated,
   Dimensions,
   Platform,
+  Pressable,
   RefreshControl,
   ScrollView,
   StatusBar,
@@ -31,7 +31,6 @@ import {
 } from "react-native";
 import StatusToggle from "../../components/StatusToggle";
 
-// TypeScript interfaces
 interface TodayStats {
   totalOrders: number;
   completedOrders: number;
@@ -39,12 +38,6 @@ interface TodayStats {
   rating: number;
   efficiency: number;
   streak: number;
-}
-
-interface PerformanceLevel {
-  level: string;
-  color: string;
-  icon: string;
 }
 
 interface StatCardProps {
@@ -64,7 +57,7 @@ interface ActionButtonProps {
   gradient: any;
 }
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 export default function DashboardScreen() {
   const [isOnline, setIsOnline] = useState(false);
@@ -79,13 +72,11 @@ export default function DashboardScreen() {
     streak: 7,
   });
 
-  // Enhanced animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const onlineAnim = useRef(new Animated.Value(0)).current;
 
-  // Smart greeting based on time
   const getGreeting = () => {
     if (currentHour < 6) return "Working late";
     if (currentHour < 12) return "Good morning";
@@ -94,84 +85,13 @@ export default function DashboardScreen() {
     return "Working late";
   };
 
-  // Performance level calculation
-  const getPerformanceLevel = (): PerformanceLevel => {
-    const score =
-      todayStats.rating * 20 +
-      todayStats.efficiency * 0.5 +
-      todayStats.streak * 2;
-    if (score >= 140) return { level: "Elite", color: "#8B5CF6", icon: "👑" };
-    if (score >= 120) return { level: "Expert", color: "#10B981", icon: "⚡" };
-    if (score >= 100) return { level: "Pro", color: "#F59E0B", icon: "🔥" };
-    return { level: "Rising", color: "#3B82F6", icon: "🚀" };
-  };
-
-  const performance = getPerformanceLevel();
-
   const toggleOnlineStatus = () => {
     const newStatus = !isOnline;
     setIsOnline(newStatus);
-
-    // Animated feedback
-    Animated.sequence([
-      Animated.timing(onlineAnim, {
-        toValue: newStatus ? 1 : 0,
-        duration: 300,
-        useNativeDriver: false,
-      }),
-      Animated.spring(onlineAnim, {
-        toValue: newStatus ? 1 : 0,
-        tension: 100,
-        friction: 8,
-        useNativeDriver: false,
-      }),
-    ]).start();
-
-    // Haptic feedback simulation
-    if (newStatus) {
-      startPulseAnimation();
-    }
-  };
-
-  const startPulseAnimation = () => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  };
-
-  const triggerRandomVerification = () => {
-    Alert.alert(
-      "🔐 Security Verification",
-      "Quick identity check required. This keeps your account secure and maintains platform trust.",
-      [
-        { text: "Later", style: "cancel" },
-        {
-          text: "Verify Now",
-          style: "default",
-          onPress: () =>
-            router.push({
-              pathname: "/verification",
-              params: { type: "random" },
-            }),
-        },
-      ]
-    );
   };
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // Simulate data refresh
     setTimeout(() => {
       setTodayStats((prev) => ({
         ...prev,
@@ -183,7 +103,6 @@ export default function DashboardScreen() {
   };
 
   useEffect(() => {
-    // Enhanced entrance animation
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -197,18 +116,6 @@ export default function DashboardScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-
-    // Smart verification logic
-    if (isOnline) {
-      const verificationTimer = setTimeout(() => {
-        const shouldVerify = Math.random() > 0.85; // 15% chance
-        if (shouldVerify && todayStats.totalOrders > 5) {
-          triggerRandomVerification();
-        }
-      }, 45000);
-
-      return () => clearTimeout(verificationTimer);
-    }
   }, [isOnline]);
 
   const StatCard: React.FC<StatCardProps> = ({
@@ -250,11 +157,10 @@ export default function DashboardScreen() {
     disabled = false,
     gradient,
   }) => (
-    <TouchableOpacity
+    <Pressable
       style={[styles.actionButton, disabled && styles.disabledAction]}
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={0.8}
     >
       <LinearGradient
         colors={disabled ? ["#F1F5F9", "#E2E8F0"] : gradient}
@@ -277,12 +183,52 @@ export default function DashboardScreen() {
           <Navigation size={16} color={disabled ? "#94A3B8" : "#ffffff"} />
         </View>
       </LinearGradient>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#1E293B" />
+      <StatusBar barStyle="light-content" backgroundColor="#131e42" />
+      {/* Glassmorphic Header */}
+      <LinearGradient
+        colors={["#131e42", "#1a2952", "#1f3162"]}
+        style={styles.headerGradient}
+      >
+        <Animated.View
+          style={[
+            styles.header,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            },
+          ]}
+        >
+          <View style={styles.profileSection}>
+            <View style={styles.avatarContainer}>
+              <LinearGradient
+                colors={["#2563eb", "#7c3aed"]}
+                style={styles.avatar}
+              >
+                <Text style={styles.avatarText}>VP</Text>
+              </LinearGradient>
+            </View>
+            <View>
+              <Text style={styles.greeting}>{getGreeting()},</Text>
+              <Text style={styles.driverName}>Vishal Pandey</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={() => router.push("/notification")}
+          >
+            <Bell size={20} color="#ffffff" />
+          </TouchableOpacity>
+        </Animated.View>
+
+          <StatusToggle isOnline={isOnline} onToggle={toggleOnlineStatus} />
+     
+      </LinearGradient>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -291,60 +237,6 @@ export default function DashboardScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Glassmorphic Header */}
-        <LinearGradient
-          colors={["#1E293B", "#334155", "#475569"]}
-          style={styles.headerGradient}
-        >
-          <Animated.View
-            style={[
-              styles.header,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }],
-              },
-            ]}
-          >
-            <View style={styles.profileSection}>
-              <View style={styles.avatarContainer}>
-                <LinearGradient
-                  colors={["#8B5CF6", "#EC4899"]}
-                  style={styles.avatar}
-                >
-                  <Text style={styles.avatarText}>VP</Text>
-                </LinearGradient>
-              </View>
-              <View>
-                <Text style={styles.greeting}>{getGreeting()},</Text>
-                <Text style={styles.driverName}>Vishal Pandey</Text>
-              </View>
-            </View>
-
-            <View style={styles.headerActions}>
-              <TouchableOpacity
-                style={styles.notificationButton}
-                onPress={() => router.push("/notification")}
-              >
-                <Bell size={20} color="#ffffff" />
-              </TouchableOpacity>
-              <Animated.View
-                style={{
-                  transform: [
-                    {
-                      scale: onlineAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [1, 1.05],
-                      }),
-                    },
-                  ],
-                }}
-              >
-                <StatusToggle isOnline={isOnline} onToggle={toggleOnlineStatus} />
-              </Animated.View>
-            </View>
-          </Animated.View>
-        </LinearGradient>
-
         {/* Smart Status Notice */}
         {!isOnline && (
           <Animated.View style={[styles.statusNotice, { opacity: fadeAnim }]}>
@@ -509,23 +401,28 @@ const styles = StyleSheet.create({
   headerGradient: {
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
-    shadowColor: "#000000",
+    shadowColor: "#131e42",
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 15,
+    paddingBottom: 16,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
     padding: 24,
     paddingTop: Platform.OS === "ios" ? 60 : 40,
+  },
+  toggleContainer: {
+    alignItems: "center",
   },
   profileSection: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
+    marginRight: 16,
   },
   avatarContainer: {
     marginRight: 16,
@@ -536,11 +433,13 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000000",
+    shadowColor: "#131e42",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 8,
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   avatarText: {
     color: "#ffffff",
@@ -582,10 +481,14 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   notificationButton: {
-    position: "relative",
     padding: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: 16,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   notificationBadge: {
     position: "absolute",

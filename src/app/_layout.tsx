@@ -1,6 +1,5 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useFrameworkReady } from "../hooks/useFrameworkReady";
 
 export default function RootLayout() {
@@ -8,8 +7,7 @@ export default function RootLayout() {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-        <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="verification" />
@@ -21,8 +19,7 @@ export default function RootLayout() {
         <Stack.Screen name="deliveryProgress" />
         <Stack.Screen name="deliveryComplete" />
         <Stack.Screen name="+not-found" />
-        </Stack>
-      </SafeAreaView>
+      </Stack>
       <StatusBar style="auto" />
     </>
   );

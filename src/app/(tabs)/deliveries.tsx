@@ -1,7 +1,7 @@
+import Header from "@/src/components/Header";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import {
-  ArrowLeft,
   Clock,
   DollarSign,
   Filter,
@@ -10,7 +10,7 @@ import {
   Package,
   Star,
   TrendingUp,
-  X,
+  X
 } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -581,44 +581,17 @@ export default function DeliveriesScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Enhanced Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={async () => {
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.back();
-          }}
-        >
-          <ArrowLeft size={24} color="#1E293B" />
-        </TouchableOpacity>
-
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>Available Orders</Text>
-          <Text style={styles.subtitle}>
-            {processedOrders.length} orders • ₹
-            {processedOrders.reduce(
-              (sum, order) => sum + order.estimatedEarning,
-              0
-            )}{" "}
-            total
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.filterButton}
-          onPress={handleFilterPress}
-        >
-          <Filter size={20} color="#2563EB" />
-          {getActiveFiltersCount() > 0 && (
-            <View style={styles.filterBadge}>
-              <Text style={styles.filterBadgeText}>
-                {getActiveFiltersCount()}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="Deliveries"
+        subtitle="Find and accept new orders"
+        showBack
+        onBack={() => router.back()}
+        right={
+          <TouchableOpacity style={{ padding: 8 }} onPress={handleFilterPress}>
+            <Filter size={20} color="#64748B" />
+          </TouchableOpacity>
+        }
+      />
 
       {/* Active Filters Indicator */}
       {(selectedFilter !== "all" || selectedSort !== "earning") && (
