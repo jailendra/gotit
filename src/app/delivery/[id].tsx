@@ -1,14 +1,14 @@
+import Header from "@/src/components/Header";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import {
-  ArrowLeft,
   Clock,
   DollarSign,
   MapPin,
   Navigation,
   Phone,
   Star,
-  User,
+  User
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -110,29 +110,19 @@ export default function DeliveryDetailsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={async () => {
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.back();
-          }}
-        >
-          <ArrowLeft size={24} color="#1E293B" />
-        </TouchableOpacity>
+      <Header
+        title="Delivery Details"
+        subtitle={`Order #${orderDetails.id}`}
+        showBack
+        onBack={() => router.back()}
+        right={
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>ACCEPTED</Text>
+          </View>
+        }
+      />
 
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>Delivery Details</Text>
-          <Text style={styles.orderId}>Order #{orderDetails.id}</Text>
-        </View>
-
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>ACCEPTED</Text>
-        </View>
-      </View>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:40}}>
         {/* Order Summary */}
         <View style={styles.summaryCard}>
           <View style={styles.summaryHeader}>
@@ -285,40 +275,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8FAFC",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  backButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#F8FAFC",
-  },
-  headerContent: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-  orderId: {
-    fontSize: 14,
-    color: "#64748B",
-    marginTop: 2,
   },
   statusBadge: {
     backgroundColor: "#059669",

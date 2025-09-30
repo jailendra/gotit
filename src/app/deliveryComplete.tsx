@@ -1,13 +1,13 @@
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import {
   ArrowRight,
-  CheckCircle,
   Clock,
   Home,
   Star,
   TrendingUp,
-  User,
+  User
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -18,6 +18,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function DeliveryCompleteScreen() {
   const [deliveryData] = useState({
@@ -39,6 +40,7 @@ export default function DeliveryCompleteScreen() {
   const [driverRating, setDriverRating] = useState(0);
   const [animatedValue] = useState(new Animated.Value(0));
   const [showCelebration, setShowCelebration] = useState(true);
+  const inset = useSafeAreaInsets();  
 
   useEffect(() => {
     // Celebration animation
@@ -124,7 +126,6 @@ export default function DeliveryCompleteScreen() {
             },
           ]}
         >
-          <CheckCircle size={100} color="#059669" />
           <Text style={styles.celebrationTitle}>🎉 Delivery Complete!</Text>
           <Text style={styles.celebrationSubtitle}>
             Great job! You've successfully completed this delivery.
@@ -145,15 +146,17 @@ export default function DeliveryCompleteScreen() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <LinearGradient
+        colors={["#141e30", "#243b55", "#141e30"]}
+        style={[styles.header,{paddingTop: inset.top}]}
+      >
         <View style={styles.headerContent}>
-          <CheckCircle size={28} color="#059669" />
           <View style={styles.headerText}>
             <Text style={styles.title}>Delivery Successful!</Text>
             <Text style={styles.subtitle}>Order #{deliveryData.orderId}</Text>
           </View>
         </View>
-      </View>
+      </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Earnings Summary */}
@@ -321,6 +324,7 @@ const styles = StyleSheet.create({
   },
   celebrationContent: {
     alignItems: "center",
+    justifyContent: "center",
   },
   celebrationTitle: {
     fontSize: 28,
@@ -353,11 +357,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 60,
     paddingBottom: 20,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
   },
   headerContent: {
     flexDirection: "row",
@@ -366,15 +366,17 @@ const styles = StyleSheet.create({
   },
   headerText: {
     flex: 1,
+    justifyContent: "center", 
+    alignItems: "center", 
   },
   title: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#1E293B",
+    color: "#fff",
   },
   subtitle: {
     fontSize: 14,
-    color: "#64748B",
+    color: "#fff",
     marginTop: 2,
   },
   content: {

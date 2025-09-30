@@ -147,7 +147,6 @@ const TabLayout = () => {
           styles.tabBar,
           {
             height: Platform.select({ ios: 60 + insets.bottom, android: 60 + Math.max(insets.bottom, 8) }),
-            paddingBottom: Platform.select({ ios: insets.bottom || 16, android: Math.max(insets.bottom, 10) }),
           },
         ],
         tabBarActiveTintColor: "#2563EB",

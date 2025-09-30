@@ -1,7 +1,13 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { AlertCircle, ArrowRight, Check, RefreshCw, Shield } from 'lucide-react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import {
+  AlertCircle,
+  ArrowRight,
+  Check,
+  RefreshCw,
+  Shield,
+} from "lucide-react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -13,12 +19,11 @@ import {
   Text,
   TouchableOpacity,
   Vibration,
-  View
-} from 'react-native';
-import { OtpInput } from 'react-native-otp-entry';
-import PhoneInput from 'react-native-phone-number-input';
-import { saveAuthToken } from '../hooks/useAuthStorage';
-
+  View,
+} from "react-native";
+import { OtpInput } from "react-native-otp-entry";
+import PhoneInput from "react-native-phone-number-input";
+import { saveAuthToken } from "../hooks/useAuthStorage";
 
 // Types
 type Stage = "phone" | "otp";
@@ -28,7 +33,6 @@ interface ValidationResult {
   isValid: boolean;
   error?: string;
 }
-
 
 const validatePhone = (
   phone: string,
@@ -352,8 +356,11 @@ export default function ProfessionalLoginScreen() {
     <View style={styles.container}>
       {/* Professional gradient background */}
       <LinearGradient
-        colors={["#174777", "#0d3a5f", "#174777"]}
-        locations={[0, 0.5, 1]}
+        // colors={["#141d45", "#3a2e8c", "#6a4fbf"]}
+        // colors={["#0f2027", "#203a43", "#2c5364"]}
+        // colors={["#0f3443", "#34e89e", "#00c6ff"]}
+        colors={["#141e30", "#243b55", "#141e30"]}
+
         style={styles.backgroundGradient}
       />
 
@@ -385,12 +392,10 @@ export default function ProfessionalLoginScreen() {
           >
             {/* Professional Header */}
             <View style={styles.header}>
-
               <Image
-                source={require('../assets/images/icon.png')}
-                style={{height: 72, width: 72, marginBottom: 20}}
+                source={require("../assets/images/adaptive-icon.png")}
+                style={{ height: 100, width: 100, marginBottom: 20 }}
               />
-           
 
               <Text style={styles.title}>
                 {stage === "phone" ? "Welcome Back" : "Verify Identity"}
@@ -463,7 +468,7 @@ export default function ProfessionalLoginScreen() {
                           setFormattedPhoneNumber(text)
                         }
                         placeholder="(555) 123-4567"
-                        textInputProps={{placeholderTextColor: "#94A3B8"}}
+                        textInputProps={{ placeholderTextColor: "#94A3B8" }}
                         containerStyle={styles.phoneContainer}
                         textContainerStyle={styles.phoneTextContainer}
                         textInputStyle={styles.phoneTextInput}
@@ -492,7 +497,7 @@ export default function ProfessionalLoginScreen() {
                       colors={
                         !canProceed || isLoading
                           ? ["#CBD5E1", "#94A3B8"]
-                          : ["#174777", "#0d3a5f"]
+                          : ["#174777", "#0f2027"]
                       }
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 0 }}
@@ -653,7 +658,7 @@ export default function ProfessionalLoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0a2540",
+    backgroundColor: "#141d45",
   },
   backgroundGradient: {
     position: "absolute",

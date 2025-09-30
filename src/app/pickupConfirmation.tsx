@@ -1,15 +1,15 @@
+import Header from "@/src/components/Header";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import {
-  ArrowLeft,
   Camera,
   CheckCircle,
   Clock,
   MapPin,
   Package,
   Upload,
-  X,
+  X
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -41,7 +41,6 @@ export default function PickupConfirmationScreen() {
 
   const takePhoto = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
@@ -50,14 +49,12 @@ export default function PickupConfirmationScreen() {
       );
       return;
     }
-
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.8,
     });
-
     if (!result.canceled && result.assets[0]) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setPhoto(result.assets[0].uri);
@@ -135,27 +132,17 @@ export default function PickupConfirmationScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={async () => {
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.back();
-          }}
-        >
-          <ArrowLeft size={24} color="#1E293B" />
-        </TouchableOpacity>
-
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>Confirm Pickup</Text>
-          <Text style={styles.subtitle}>Verify package collection</Text>
-        </View>
-
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>AT PICKUP</Text>
-        </View>
-      </View>
+      <Header
+        title="Confirm Pickup"
+        subtitle="Verify package collection"
+        showBack
+        onBack={() => router.back()}
+        right={
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>AT PICKUP</Text>
+          </View>
+        }
+      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Location Info */}

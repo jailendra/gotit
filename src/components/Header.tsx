@@ -2,7 +2,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
 interface HeaderProps {
   title?: string;
@@ -22,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({
   style,
 }) => (
   <LinearGradient
-    colors={["#131e42", "#1a2952", "#1f3162"]}
+    colors={["#141e30", "#243b55", "#141e30"]}
     style={[styles.headerGradient, style]}
   >
     <View style={styles.header}>
@@ -40,7 +46,9 @@ const Header: React.FC<HeaderProps> = ({
 
       <View style={styles.headerContent}>
         <Text style={styles.headerTitle}>{title}</Text>
-        {subtitle ? <Text style={styles.headerSubtitle}>{subtitle}</Text> : null}
+        {subtitle ? (
+          <Text style={styles.headerSubtitle}>{subtitle}</Text>
+        ) : null}
       </View>
 
       {right ? right : <View style={styles.headerSpacer} />}
@@ -50,8 +58,6 @@ const Header: React.FC<HeaderProps> = ({
 
 const styles = StyleSheet.create({
   headerGradient: {
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,

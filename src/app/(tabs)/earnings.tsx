@@ -29,6 +29,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface EarningsData {
   period: "day" | "week" | "month";
@@ -74,6 +75,8 @@ export default function EarningsScreen() {
   const [showBalance, setShowBalance] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(1));
+
+    const inset = useSafeAreaInsets();
 
   const earningsData: Record<string, EarningsData> = {
     day: {
@@ -232,27 +235,7 @@ export default function EarningsScreen() {
     }, 1500);
   };
 
-  const handleWithdraw = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    Alert.alert(
-      "Request Withdrawal",
-      `Withdraw ₹${currentData.totalEarnings.toLocaleString()} to your registered bank account?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Withdraw",
-          style: "default",
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            Alert.alert(
-              "Success",
-              "Withdrawal request submitted successfully!"
-            );
-          },
-        },
-      ]
-    );
-  };
+
 
   const handleDownloadStatement = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -404,6 +387,7 @@ export default function EarningsScreen() {
         title="Earnings"
         subtitle="Track your delivery income"
         showBack
+        style={{paddingTop: inset.top}}
         onBack={() => router.back()}
         right={
           <View style={{ flexDirection: "row", gap: 8 }}>

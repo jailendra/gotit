@@ -1,8 +1,8 @@
+import Header from "@/src/components/Header";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import {
-  ArrowLeft,
   Camera,
   CheckCircle,
   Key,
@@ -27,6 +27,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -49,6 +50,8 @@ export default function DeliveryProgressScreen() {
   const [isCodeValid, setIsCodeValid] = useState(false);
   const [arrivalTime, setArrivalTime] = useState<Date | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const inset = useSafeAreaInsets();
 
   useEffect(() => {
     setIsCodeValid(deliveryCode.toUpperCase() === orderDetails.deliveryCode);
@@ -163,30 +166,20 @@ export default function DeliveryProgressScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={async () => {
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.back();
-          }}
-        >
-          <ArrowLeft size={24} color="#1E293B" />
-        </TouchableOpacity>
-
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>Deliver Order</Text>
-          <Text style={styles.subtitle}>Complete the delivery process</Text>
-        </View>
-
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>
-            {arrivalTime ? "AT DROPOFF" : "EN ROUTE"}
-          </Text>
-        </View>
-      </View>
+    <View style={[styles.container, { paddingBottom: inset.bottom }]}>
+      <Header
+        title="Deliver Order"
+        subtitle="Complete the delivery process"
+        showBack
+        onBack={() => router.back()}
+        right={
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>
+              {arrivalTime ? "AT DROPOFF" : "EN ROUTE"}
+            </Text>
+          </View>
+        }
+      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Delivery Location */}
@@ -264,7 +257,6 @@ export default function DeliveryProgressScreen() {
               <Text style={styles.codeSubtitle}>
                 Ask customer for their 4-letter delivery code
               </Text>
-
               <View style={styles.codeInputContainer}>
                 <Key size={20} color="#64748B" />
                 <TextInput
@@ -278,6 +270,7 @@ export default function DeliveryProgressScreen() {
                   value={deliveryCode}
                   onChangeText={setDeliveryCode}
                   placeholder="Enter 4-letter code"
+                  placeholderTextColor="#94A3B8"
                   maxLength={4}
                   autoCapitalize="characters"
                   autoCorrect={false}
@@ -297,8 +290,6 @@ export default function DeliveryProgressScreen() {
                 </Text>
               )}
             </View>
-
-            {/* Delivery Photo */}
             <View style={styles.photoCard}>
               <Text style={styles.cardTitle}>📸 Delivery Proof</Text>
               <Text style={styles.photoSubtitle}>
@@ -410,40 +401,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8FAFC",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  backButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#F8FAFC",
-  },
-  headerContent: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#64748B",
-    marginTop: 2,
   },
   statusBadge: {
     backgroundColor: "#F59E0B",

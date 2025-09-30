@@ -31,6 +31,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { removeAuthToken } from "../../hooks/useAuthStorage";
 
 export default function ProfileScreen() {
@@ -53,6 +54,8 @@ export default function ProfileScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
+
+  const inset = useSafeAreaInsets();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -161,7 +164,12 @@ export default function ProfileScreen() {
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-       <Header title="My Profile" showBack onBack={() => router.back()} />
+      <Header
+        title="My Profile"
+        showBack
+        onBack={() => router.back()}
+        style={{ paddingTop: inset.top }}
+      />
       <ScrollView
         style={styles.container}
         refreshControl={
@@ -171,9 +179,6 @@ export default function ProfileScreen() {
       >
         <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
           {/* Header */}
-         
-
-          
 
           {/* Profile Section */}
           <View style={styles.profileSection}>

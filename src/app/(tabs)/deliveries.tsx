@@ -24,6 +24,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface DeliveryOrder {
   id: string;
@@ -128,6 +129,8 @@ export default function DeliveriesScreen() {
       return acc;
     }, {} as { [key: string]: Animated.Value })
   );
+
+  const inset = useSafeAreaInsets();
 
   // Update timer countdown
   useEffect(() => {
@@ -572,13 +575,7 @@ export default function DeliveriesScreen() {
     </Modal>
   );
 
-  const getActiveFiltersCount = () => {
-    let count = 0;
-    if (selectedFilter !== "all") count++;
-    if (selectedSort !== "earning") count++;
-    return count;
-  };
-
+ 
   return (
     <View style={styles.container}>
       <Header
@@ -586,9 +583,10 @@ export default function DeliveriesScreen() {
         subtitle="Find and accept new orders"
         showBack
         onBack={() => router.back()}
+        style={{ paddingTop: inset.top }}
         right={
           <TouchableOpacity style={{ padding: 8 }} onPress={handleFilterPress}>
-            <Filter size={20} color="#64748B" />
+            <Filter size={20} color="#FFF" />
           </TouchableOpacity>
         }
       />
