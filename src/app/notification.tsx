@@ -18,7 +18,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import Header from "../components/Header";
 
@@ -202,7 +202,7 @@ export default function NotificationsScreen() {
       <StatusBar barStyle="light-content" backgroundColor="#131e42" />
 
       {/* Header */}
-  <Header title="Notifications" showBack onBack={() => router.back()} />
+      <Header title="Notifications" showBack onBack={() => router.back()} />
 
       {/* Notifications List */}
       <ScrollView

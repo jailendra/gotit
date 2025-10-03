@@ -171,6 +171,7 @@ export default function DeliveryProgressScreen() {
         title="Deliver Order"
         subtitle="Complete the delivery process"
         showBack
+        style={{ paddingTop: inset.top }}
         onBack={() => router.back()}
         right={
           <View style={styles.statusBadge}>

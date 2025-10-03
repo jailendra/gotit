@@ -23,11 +23,10 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -190,7 +189,7 @@ export default function DashboardScreen() {
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#131e42" />
+      {/* <StatusBar barStyle="light-content" backgroundColor="#131e42" /> */}
       {/* Glassmorphic Header */}
       <LinearGradient
         colors={["#141e30", "#243b55", "#141e30"]}

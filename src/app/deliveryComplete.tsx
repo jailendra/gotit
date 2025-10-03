@@ -144,7 +144,7 @@ export default function DeliveryCompleteScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{paddingBottom: inset.bottom}]}>
       {/* Header */}
       <LinearGradient
         colors={["#141e30", "#243b55", "#141e30"]}

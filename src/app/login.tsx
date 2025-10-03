@@ -356,12 +356,11 @@ export default function ProfessionalLoginScreen() {
     <View style={styles.container}>
       {/* Professional gradient background */}
       <LinearGradient
-        // colors={["#141d45", "#3a2e8c", "#6a4fbf"]}
-        // colors={["#0f2027", "#203a43", "#2c5364"]}
-        // colors={["#0f3443", "#34e89e", "#00c6ff"]}
-        colors={["#141e30", "#243b55", "#141e30"]}
-
+        colors={["#141d45", "#1a237e", "#283593"]}
         style={styles.backgroundGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        locations={[0.5, 0.75, 1]}
       />
 
       {/* Subtle pattern overlay */}

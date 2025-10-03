@@ -8,7 +8,7 @@ import {
   Navigation,
   Phone,
   Star,
-  User
+  User,
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -20,6 +20,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface OrderDetails {
   id: string;
@@ -69,6 +70,7 @@ export default function DeliveryDetailsScreen() {
   });
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const inset = useSafeAreaInsets();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -109,11 +111,12 @@ export default function DeliveryDetailsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: inset.bottom }]}>
       <Header
         title="Delivery Details"
         subtitle={`Order #${orderDetails.id}`}
         showBack
+        style={{ paddingTop: inset.top }}
         onBack={() => router.back()}
         right={
           <View style={styles.statusBadge}>
@@ -122,7 +125,11 @@ export default function DeliveryDetailsScreen() {
         }
       />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:40}}>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Order Summary */}
         <View style={styles.summaryCard}>
           <View style={styles.summaryHeader}>

@@ -9,7 +9,7 @@ import {
   MapPin,
   Package,
   Upload,
-  X
+  X,
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -22,6 +22,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -38,6 +39,7 @@ export default function PickupConfirmationScreen() {
   const [isUploading, setIsUploading] = useState(false);
   const [isPickedUp, setIsPickedUp] = useState(false);
   const [arrivalTime] = useState(new Date());
+  const inset = useSafeAreaInsets();
 
   const takePhoto = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -131,11 +133,12 @@ export default function PickupConfirmationScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: inset.bottom }]}>
       <Header
         title="Confirm Pickup"
         subtitle="Verify package collection"
         showBack
+        style={{ paddingTop: inset.top }}
         onBack={() => router.back()}
         right={
           <View style={styles.statusBadge}>
